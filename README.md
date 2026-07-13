@@ -209,7 +209,7 @@ MIT License — see [LICENSE](LICENSE).
 
 ## 👤 Author
 
-**Your Name** — [GitHub](https://github.com/<your-username>) · [LinkedIn](https://linkedin.com/in/<your-username>)
+**SASWATA GHOSAL** 
 
 ## 🙏 Acknowledgements
 
