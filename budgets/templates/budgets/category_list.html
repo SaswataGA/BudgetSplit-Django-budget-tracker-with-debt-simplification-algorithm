@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Categories - BudgetSplit{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Categories</h2>
+    <a href="{% url 'budgets:category_add' %}" class="btn btn-primary">+ Add Category</a>
+</div>
+
+{% if categories %}
+<div class="row g-3">
+    {% for category in categories %}
+    <div class="col-md-4">
+        <div class="card p-3 d-flex flex-row justify-content-between align-items-center">
+            <span><span class="category-swatch" style="background:{{ category.color }}"></span>{{ category.name }}</span>
+            <span>
+                <a href="{% url 'budgets:category_edit' category.pk %}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                <a href="{% url 'budgets:category_delete' category.pk %}" class="btn btn-sm btn-outline-danger">Delete</a>
+            </span>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p class="text-muted">No categories yet. <a href="{% url 'budgets:category_add' %}">Create your first one</a>.</p>
+{% endif %}
+{% endblock %}

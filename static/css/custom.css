@@ -1,0 +1,45 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.card {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    border: none;
+}
+
+.progress {
+    height: 0.6rem;
+}
+
+.balance-positive {
+    color: #198754;
+    font-weight: 600;
+}
+
+.balance-negative {
+    color: #dc3545;
+    font-weight: 600;
+}
+
+.category-swatch {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 6px;
+}
+
+/* Fallback styling for Django's built-in auth forms (password change/
+   reset) that render plain widgets without a form-control class --
+   keeps them visually consistent with the rest of the Bootstrap UI
+   without needing a custom form subclass for every minor auth view. */
+input[type="text"]:not(.form-control),
+input[type="password"]:not(.form-control),
+input[type="email"]:not(.form-control) {
+    display: block;
+    width: 100%;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}{% if is_edit %}Edit{% else %}Add{% endif %} Expense - BudgetSplit{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card p-4">
+            <h3 class="mb-3">{% if is_edit %}Edit{% else %}Add{% endif %} Expense</h3>
+            {% if not form.fields.category.queryset.exists %}
+                <div class="alert alert-warning">You need to <a href="{% url 'budgets:category_add' %}">create a category</a> first.</div>
+            {% endif %}
+            <form method="post">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="mb-3">
+                        <label class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}<div class="text-danger small">{{ field.errors }}</div>{% endif %}
+                    </div>
+                {% endfor %}
+                <button type="submit" class="btn btn-primary">Save</button>
+                <a href="{% url 'budgets:expense_list' %}" class="btn btn-outline-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

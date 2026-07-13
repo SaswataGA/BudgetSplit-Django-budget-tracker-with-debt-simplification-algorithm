@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Your Profile - BudgetSplit{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card p-4">
+            <h3 class="mb-3">Your Profile</h3>
+            {% if user.profile.avatar %}
+                <img src="{{ user.profile.avatar.url }}" class="rounded-circle mb-3" width="80" height="80" alt="Avatar">
+            {% endif %}
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <h6 class="text-muted">Account</h6>
+                {% for field in user_form %}
+                    <div class="mb-3">
+                        <label class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}<div class="text-danger small">{{ field.errors }}</div>{% endif %}
+                    </div>
+                {% endfor %}
+
+                <h6 class="text-muted mt-4">Preferences</h6>
+                {% for field in profile_form %}
+                    <div class="mb-3">
+                        <label class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}<div class="text-danger small">{{ field.errors }}</div>{% endif %}
+                    </div>
+                {% endfor %}
+
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

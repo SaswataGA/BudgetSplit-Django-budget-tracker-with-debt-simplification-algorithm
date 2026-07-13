@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Delete Expense{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card p-4">
+            <h3 class="mb-3">Delete Expense</h3>
+            <p>Delete <strong>{{ expense.description }}</strong> ({{ expense.amount }}) from {{ group.name }}? This will also remove all its splits.</p>
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                <a href="{% url 'groups:group_detail' group.pk %}" class="btn btn-outline-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

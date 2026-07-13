@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}{{ group.name }} - BudgetSplit{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>{{ group.name }}</h2>
+    <a href="{% url 'groups:group_expense_add' group.pk %}" class="btn btn-primary">+ Add Expense</a>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-7">
+        <div class="card p-3 mb-4">
+            <h5>Expenses</h5>
+            {% if expenses %}
+            <table class="table table-sm">
+                <thead><tr><th>Date</th><th>Description</th><th>Paid By</th><th>Amount</th><th>Split</th><th></th></tr></thead>
+                <tbody>
+                {% for e in expenses %}
+                    <tr>
+                        <td>{{ e.date }}</td>
+                        <td>{{ e.description }}</td>
+                        <td>{{ e.paid_by.username }}</td>
+                        <td>{{ e.amount }}</td>
+                        <td><span class="badge bg-secondary">{{ e.get_split_type_display }}</span></td>
+                        <td>
+                            <a href="{% url 'groups:group_expense_delete' group.pk e.pk %}" class="btn btn-sm btn-outline-danger">Delete</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+                <p class="text-muted mb-0">No expenses yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="col-md-5">
+        <div class="card p-3 mb-4">
+            <h5>Balances</h5>
+            <ul class="list-group list-group-flush">
+                {% for row in balance_rows %}
+                <li class="list-group-item d-flex justify-content-between">
+                    <span>{{ row.user.username }}</span>
+                    <span class="{% if row.balance > 0 %}balance-positive{% elif row.balance < 0 %}balance-negative{% endif %}">
+                        {% if row.balance > 0 %}+{% endif %}{{ row.balance }}
+                    </span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <div class="card p-3 mb-4">
+            <h5>Suggested Settlements</h5>
+            <p class="text-muted small">The minimum number of payments needed to settle everyone up.</p>
+            {% if settlements %}
+                <ul class="list-group list-group-flush">
+                    {% for s in settlements %}
+                    <li class="list-group-item">
+                        <strong>{{ s.from_user.username }}</strong> pays <strong>{{ s.to_user.username }}</strong>
+                        <span class="float-end fw-bold">{{ s.amount }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted mb-0">Everyone is settled up!</p>
+            {% endif %}
+        </div>
+
+        <div class="card p-3">
+            <h5>Members</h5>
+            <ul class="list-group list-group-flush mb-3">
+                {% for member in group.members.all %}
+                    <li class="list-group-item">{{ member.username }}</li>
+                {% endfor %}
+            </ul>
+            <form method="post" action="{% url 'groups:group_add_member' group.pk %}" class="d-flex gap-2">
+                {% csrf_token %}
+                {{ add_member_form.username }}
+                <button type="submit" class="btn btn-outline-primary">Add</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Add Expense - {{ group.name }}{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card p-4">
+            <h3 class="mb-3">Add Expense to {{ group.name }}</h3>
+            <form method="post">
+                {% csrf_token %}
+                {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+                {% for field in form %}
+                    <div class="mb-3">
+                        <label class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}<div class="text-danger small">{{ field.errors }}</div>{% endif %}
+                    </div>
+                {% endfor %}
+
+                <div id="customSplitSection" class="mb-3 border rounded p-3" style="display:none;">
+                    <h6>Custom split amounts</h6>
+                    <p class="text-muted small">Must add up to the total amount above.</p>
+                    {% for user_id, entry in split_data.items %}
+                        <div class="row mb-2 align-items-center">
+                            <div class="col-6">{{ entry.member.username }}</div>
+                            <div class="col-6">
+                                <input type="number" step="0.01" min="0" class="form-control"
+                                       name="split_{{ user_id }}" value="{{ entry.value|default_if_none:'' }}">
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <button type="submit" class="btn btn-primary">Add Expense</button>
+                <a href="{% url 'groups:group_detail' group.pk %}" class="btn btn-outline-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Show/hide the custom split section based on the selected split type.
+    // Kept as a small vanilla-JS snippet (no framework needed for one toggle).
+    const splitTypeSelect = document.getElementById('id_split_type');
+    const customSection = document.getElementById('customSplitSection');
+
+    function toggleCustomSplit() {
+        customSection.style.display = splitTypeSelect.value === 'custom' ? 'block' : 'none';
+    }
+
+    if (splitTypeSelect) {
+        splitTypeSelect.addEventListener('change', toggleCustomSplit);
+        toggleCustomSplit(); // set correct initial state (e.g. after a validation error re-render)
+    }
+</script>
+{% endblock %}

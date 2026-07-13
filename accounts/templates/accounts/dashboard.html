@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Dashboard - BudgetSplit{% endblock %}
+{% block content %}
+<h2 class="mb-4">Dashboard — {{ current_month_name }}</h2>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card p-3">
+            <div class="text-muted small">Total Budgeted</div>
+            <div class="fs-3 fw-bold">{{ user.profile.currency_symbol }}{{ total_budgeted|floatformat:2|intcomma }}</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-3">
+            <div class="text-muted small">Total Spent</div>
+            <div class="fs-3 fw-bold">{{ user.profile.currency_symbol }}{{ total_spent|floatformat:2|intcomma }}</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-3">
+            <div class="text-muted small">Group Balance (net)</div>
+            <div class="fs-3 fw-bold {% if total_net_across_groups > 0 %}balance-positive{% elif total_net_across_groups < 0 %}balance-negative{% endif %}">
+                {% if total_net_across_groups > 0 %}+{% endif %}{{ user.profile.currency_symbol }}{{ total_net_across_groups|floatformat:2 }}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if over_budget_categories %}
+<div class="alert alert-warning">
+    <strong>⚠️ Over budget this month:</strong>
+    {% for b in over_budget_categories %}{{ b.category.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+</div>
+{% endif %}
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="card p-3">
+            <h5>This Month's Budgets</h5>
+            {% if current_budgets %}
+                {% for b in current_budgets %}
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between">
+                        <span><span class="category-swatch" style="background:{{ b.category.color }}"></span>{{ b.category.name }}</span>
+                        <span>{{ user.profile.currency_symbol }}{{ b.spent_amount|floatformat:2 }} / {{ user.profile.currency_symbol }}{{ b.monthly_limit|floatformat:2 }}</span>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar {% if b.is_over_budget %}bg-danger{% else %}bg-success{% endif %}"
+                             style="width: {{ b.percent_used }}%"></div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-muted">No budgets set for this month yet. <a href="{% url 'budgets:budget_add' %}">Create one</a>.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card p-3 mb-4">
+            <h5>Recent Expenses</h5>
+            {% if recent_expenses %}
+                <ul class="list-group list-group-flush">
+                    {% for e in recent_expenses %}
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>{{ e.category.name }} {% if e.description %}— {{ e.description }}{% endif %}</span>
+                        <span>{{ user.profile.currency_symbol }}{{ e.amount|floatformat:2 }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted mb-0">No expenses logged yet. <a href="{% url 'budgets:expense_add' %}">Add one</a>.</p>
+            {% endif %}
+        </div>
+
+        <div class="card p-3">
+            <h5>Group Balances</h5>
+            {% if group_summaries %}
+                <ul class="list-group list-group-flush">
+                    {% for gs in group_summaries %}
+                    <li class="list-group-item d-flex justify-content-between">
+                        <a href="{% url 'groups:group_detail' gs.group.pk %}">{{ gs.group.name }}</a>
+                        <span class="{% if gs.balance > 0 %}balance-positive{% else %}balance-negative{% endif %}">
+                            {% if gs.balance > 0 %}you're owed {% else %}you owe {% endif %}
+                            {{ user.profile.currency_symbol }}{{ gs.balance|floatformat:2 }}
+                        </span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted mb-0">All settled up! <a href="{% url 'groups:group_list' %}">View your groups</a>.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

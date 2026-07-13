@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Budgets - BudgetSplit{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Budgets</h2>
+    <a href="{% url 'budgets:budget_add' %}" class="btn btn-primary">+ Add Budget</a>
+</div>
+
+{% if budgets %}
+<div class="table-responsive">
+<table class="table table-hover bg-white">
+    <thead>
+        <tr><th>Category</th><th>Month</th><th>Limit</th><th>Spent</th><th>Progress</th><th></th></tr>
+    </thead>
+    <tbody>
+    {% for b in budgets %}
+        <tr>
+            <td><span class="category-swatch" style="background:{{ b.category.color }}"></span>{{ b.category.name }}</td>
+            <td>{{ b.month }}/{{ b.year }}</td>
+            <td>{{ request.user.profile.currency_symbol }}{{ b.monthly_limit|floatformat:2 }}</td>
+            <td>{{ request.user.profile.currency_symbol }}{{ b.spent_amount|floatformat:2 }}</td>
+            <td style="width:150px">
+                <div class="progress">
+                    <div class="progress-bar {% if b.is_over_budget %}bg-danger{% else %}bg-success{% endif %}" style="width: {{ b.percent_used }}%"></div>
+                </div>
+            </td>
+            <td>
+                <a href="{% url 'budgets:budget_edit' b.pk %}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                <a href="{% url 'budgets:budget_delete' b.pk %}" class="btn btn-sm btn-outline-danger">Delete</a>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+{% else %}
+<p class="text-muted">No budgets yet. <a href="{% url 'budgets:budget_add' %}">Create your first one</a>.</p>
+{% endif %}
+{% endblock %}
